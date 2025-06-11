@@ -5,6 +5,7 @@ import { AnimationUtils, ScrollAnimations, InteractionEffects, MobileOptimizatio
 import PortfolioRenderer from './scripts/portfolio-renderer.js';
 import ThemeManager from './scripts/theme-manager.js';
 import PerformanceMonitor from './scripts/performance-monitor.js';
+import portfolioAPI from './scripts/api.js';
 import { 
     particleVertexShader, 
     particleFragmentShader, 
@@ -26,16 +27,256 @@ class Portfolio3D {
         this.themeManager = null;
         this.performanceMonitor = null;
         this.particleCount = 2000; // Default particle count
+        this.portfolioData = null; // Store fetched portfolio data
         
         this.init();
         this.setupEventListeners();
-        this.animate();
-        this.setupScrollAnimations();
-        this.setupThemeListener();
-        this.setupPerformanceOptimization();
     }
 
-    init() {
+    async init() {
+        try {
+            // Load portfolio data from API
+            await this.loadPortfolioData();
+            
+            // Initialize the 3D scene
+            this.initScene();
+            this.createParticles();
+            this.createGeometryShapes();
+            this.setupScrollAnimations();
+            this.setupThemeListener();
+            this.setupPerformanceOptimization();
+            this.animate();
+
+            // Hide loading screen
+            this.hideLoadingScreen();
+        } catch (error) {
+            console.error('Failed to initialize portfolio:', error);
+            // Continue with static content as fallback
+            this.initScene();
+            this.createParticles();
+            this.createGeometryShapes();
+            this.setupScrollAnimations();
+            this.setupThemeListener();
+            this.setupPerformanceOptimization();
+            this.animate();
+            this.hideLoadingScreen();
+        }
+    }
+
+    async loadPortfolioData() {
+        try {
+            console.log('Loading portfolio data from API...');
+            this.portfolioData = await portfolioAPI.getPortfolioData();
+            
+            // Update content with API data
+            this.updateContent();
+        } catch (error) {
+            console.error('Failed to load portfolio data:', error);
+            throw error;
+        }
+    }
+
+    updateContent() {
+        if (!this.portfolioData) return;
+
+        // Update hero section
+        this.updateHeroSection();
+        
+        // Update about section
+        this.updateAboutSection();
+        
+        // Update skills section
+        this.updateSkillsSection();
+        
+        // Update projects section
+        this.updateProjectsSection();
+    }
+
+    updateHeroSection() {
+        const { about } = this.portfolioData;
+        if (!about) return;
+
+        // Update hero greeting and description
+        const heroGreeting = document.querySelector('.hero-greeting');
+        const heroName = document.querySelector('.hero-name');
+        const heroSubtitle = document.querySelector('.hero-subtitle');
+        const heroDescription = document.querySelector('.hero-description');
+
+        if (heroGreeting && about.greeting) {
+            heroGreeting.textContent = about.greeting;
+        }
+        if (heroSubtitle && about.subtitle) {
+            heroSubtitle.textContent = about.subtitle;
+        }
+        if (heroDescription && about.hero_description) {
+            heroDescription.textContent = about.hero_description;
+        }
+    }
+
+    updateAboutSection() {
+        const { about } = this.portfolioData;
+        if (!about) return;
+
+        // Update about section content
+        const aboutIntro = document.querySelector('.about-intro');
+        if (aboutIntro && about.description) {
+            aboutIntro.textContent = about.description;
+        }
+    }
+
+    updateSkillsSection() {
+        const { skills } = this.portfolioData;
+        if (!skills) return;
+
+        const skillsGrid = document.querySelector('.skills-grid');
+        if (!skillsGrid) return;
+
+        // Clear existing content
+        skillsGrid.innerHTML = '';
+
+        // Transform and render skills from API
+        const transformedSkills = portfolioAPI.transformSkillsData(skills);
+        
+        Object.entries(transformedSkills).forEach(([categoryKey, skillsArray]) => {
+            const categoryTitle = this.getCategoryTitle(categoryKey);
+            
+            const skillCategory = document.createElement('div');
+            skillCategory.className = 'skill-category';
+            
+            skillCategory.innerHTML = `
+                <h3 class="category-title">${categoryTitle}</h3>
+                <div class="skills-list">
+                    ${skillsArray.map(skill => `
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span class="skill-name">${skill.name}</span>
+                                <span class="skill-percentage">${skill.level}%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-progress="${skill.level}"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            skillsGrid.appendChild(skillCategory);
+        });
+    }
+
+    updateProjectsSection() {
+        const { projects } = this.portfolioData;
+        if (!projects || projects.length === 0) return;
+
+        const projectsGrid = document.querySelector('.projects-grid');
+        if (!projectsGrid) return;
+
+        // Clear existing content
+        projectsGrid.innerHTML = '';
+
+        // Transform and render projects from API
+        const transformedProjects = portfolioAPI.transformProjectsData(projects);
+        
+        // Sort by featured and year
+        transformedProjects.sort((a, b) => {
+            if (a.featured && !b.featured) return -1;
+            if (!a.featured && b.featured) return 1;
+            return (b.year || 0) - (a.year || 0);
+        });
+
+        transformedProjects.forEach(project => {
+            const projectCard = this.createProjectCard(project);
+            projectsGrid.appendChild(projectCard);
+        });
+    }
+
+    createProjectCard(project) {
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        card.setAttribute('data-category', project.category);
+        
+        if (project.featured) {
+            card.classList.add('featured');
+        }
+
+        card.innerHTML = `
+            <div class="project-image">
+                <div class="project-placeholder">
+                    ${this.getCategoryIcon(project.category)}
+                    ${project.year ? `<span class="project-year">${project.year}</span>` : ''}
+                </div>
+                ${project.featured ? '<div class="featured-badge">Featured</div>' : ''}
+            </div>
+            <div class="project-content">
+                <h3 class="project-title">${project.title}</h3>
+                <p class="project-description">${project.description}</p>
+                ${project.tags && project.tags.length > 0 ? `
+                    <div class="project-tags">
+                        ${project.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                ` : ''}
+                <div class="project-links">
+                    ${this.createProjectLinks(project.links)}
+                </div>
+            </div>
+        `;
+
+        return card;
+    }
+
+    createProjectLinks(links) {
+        if (!links) return '';
+        
+        const linkLabels = {
+            demo: 'View Demo',
+            github: 'GitHub',
+            download: 'Download',
+            store: 'Store'
+        };
+
+        return Object.entries(links)
+            .filter(([key, url]) => url && url !== '#' && url !== null)
+            .map(([key, url]) => {
+                return `<a href="${url}" class="project-link" target="_blank" rel="noopener">${linkLabels[key] || key}</a>`;
+            })
+            .join('');
+    }
+
+    getCategoryIcon(category) {
+        const icons = {
+            unity: 'Unity Game',
+            vr: 'VR Experience',
+            ar: 'AR App',
+            '3d': '3D Model',
+            modeling: '3D Model'
+        };
+        return icons[category] || 'Project';
+    }
+
+    getCategoryTitle(categoryKey) {
+        const titles = {
+            unity: 'Game Development',
+            vr: 'VR/AR Development',
+            modeling: '3D Modeling',
+            technical: 'Technical Skills'
+        };
+        return titles[categoryKey] || categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1);
+    }
+
+    hideLoadingScreen() {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            gsap.to(loadingScreen, {
+                opacity: 0,
+                duration: 0.5,
+                onComplete: () => {
+                    loadingScreen.style.display = 'none';
+                }
+            });
+        }
+    }
+
+    initScene() {
         // Scene setup
         this.scene = new THREE.Scene();
         this.scene.fog = new THREE.Fog(0x0a0a0a, 1, 1000);
@@ -71,12 +312,6 @@ class Portfolio3D {
         const pointLight = new THREE.PointLight(0x7b2cbf, 0.8, 100);
         pointLight.position.set(10, 10, 10);
         this.scene.add(pointLight);
-
-        // Create particle system
-        this.createParticles();
-        
-        // Create floating geometric shapes
-        this.createGeometryShapes();
     }    createParticles() {
         const positions = new Float32Array(this.particleCount * 3);
         const colors = new Float32Array(this.particleCount * 3);
