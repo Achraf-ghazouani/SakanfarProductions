@@ -1,0 +1,30 @@
+{
+  "name": "sakanfar-portfolio",
+  "version": "1.0.0",
+  "description": "Personal portfolio showcasing game development, VR/AR, and 3D modeling work",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.158.0",
+    "gsap": "^3.12.2",
+    "lottie-web": "^5.12.2"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "keywords": [
+    "portfolio",
+    "threejs",
+    "game-development",
+    "unity",
+    "vr",
+    "ar",
+    "3d-modeling"
+  ],
+  "author": "Sakanfar Productions",
+  "license": "MIT"
+}

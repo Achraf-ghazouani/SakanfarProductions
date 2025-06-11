@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sakanfar Productions - Game Developer & 3D Artist</title>
+    <meta name="description" content="Portfolio of a passionate game developer specializing in Unity, VR/AR experiences, and 3D modeling">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/styles/main.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading Portfolio...</div>
+            <div class="loading-progress">
+                <div class="loading-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-brand">
+            <span class="nav-logo">SP</span>
+            <span class="nav-title">Sakanfar Productions</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#home" class="nav-link active">Home</a></li>
+            <li><a href="#about" class="nav-link">About</a></li>
+            <li><a href="#skills" class="nav-link">Skills</a></li>
+            <li><a href="#projects" class="nav-link">Projects</a></li>
+            <li><a href="#experience" class="nav-link">Experience</a></li>
+            <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Three.js Canvas -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section id="home" class="section hero-section">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="hero-greeting">Hello, I'm</span>
+                        <span class="hero-name">Sakanfar</span>
+                        <span class="hero-subtitle">Game Developer & 3D Artist</span>
+                    </h1>
+                    <p class="hero-description">
+                        Crafting immersive digital experiences through Unity game development, 
+                        cutting-edge VR/AR applications, and detailed 3D modeling.
+                    </p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="scrollToSection('projects')">
+                            View My Work
+                        </button>
+                        <button class="btn btn-secondary" onclick="scrollToSection('contact')">
+                            Get In Touch
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="50">0</span>
+                        <span class="stat-label">Projects Completed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="5">0</span>
+                        <span class="stat-label">Years Experience</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="15">0</span>
+                        <span class="stat-label">VR/AR Apps</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section about-section">
+            <div class="container">
+                <h2 class="section-title">About Me</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p class="about-intro">
+                            I'm a passionate game developer and 3D artist with a deep love for creating 
+                            immersive digital experiences. My journey in game development has taken me 
+                            through various platforms and technologies, with a special focus on Unity 
+                            engine and emerging VR/AR technologies.
+                        </p>
+                        <div class="about-highlights">
+                            <div class="highlight-item">
+                                <h3>Game Development</h3>
+                                <p>Expert in Unity engine with experience in 2D/3D game development, 
+                                   physics simulation, and performance optimization.</p>
+                            </div>
+                            <div class="highlight-item">
+                                <h3>VR/AR Development</h3>
+                                <p>Creating immersive virtual and augmented reality experiences 
+                                   using cutting-edge technologies and platforms.</p>
+                            </div>
+                            <div class="highlight-item">
+                                <h3>3D Modeling</h3>
+                                <p>Skilled in creating detailed 3D models, textures, and animations 
+                                   for games and interactive applications.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="section skills-section">
+            <div class="container">
+                <h2 class="section-title">Skills & Technologies</h2>
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <h3 class="category-title">Game Development</h3>
+                        <div class="skills-list">
+                            <div class="skill-item">
+                                <span class="skill-name">Unity 3D</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="95"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">C# Programming</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="90"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">Game Physics</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="85"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">Level Design</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="80"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-category">
+                        <h3 class="category-title">VR/AR Development</h3>
+                        <div class="skills-list">
+                            <div class="skill-item">
+                                <span class="skill-name">Oculus SDK</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="85"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">ARCore/ARKit</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="80"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">XR Interaction</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="90"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">Spatial Computing</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="75"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-category">
+                        <h3 class="category-title">3D Modeling</h3>
+                        <div class="skills-list">
+                            <div class="skill-item">
+                                <span class="skill-name">Blender</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="90"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">Maya</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="85"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">Substance Painter</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="80"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <span class="skill-name">ZBrush</span>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" data-progress="75"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="section projects-section">
+            <div class="container">
+                <h2 class="section-title">Featured Projects</h2>
+                <div class="projects-filter">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="unity">Unity Games</button>
+                    <button class="filter-btn" data-filter="vr">VR/AR</button>
+                    <button class="filter-btn" data-filter="3d">3D Models</button>
+                </div>
+                <div class="projects-grid">
+                    <!-- Unity Games -->
+                    <div class="project-card" data-category="unity">
+                        <div class="project-image">
+                            <div class="project-placeholder">Unity Game</div>
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">Epic Adventure RPG</h3>
+                            <p class="project-description">
+                                A fully-featured RPG with complex combat system, inventory management, 
+                                and immersive storytelling built in Unity.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Unity</span>
+                                <span class="tag">C#</span>
+                                <span class="tag">RPG</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="project-link">View Project</a>
+                                <a href="#" class="project-link">Play Demo</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" data-category="unity">
+                        <div class="project-image">
+                            <div class="project-placeholder">Unity Game</div>
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">Puzzle Platformer</h3>
+                            <p class="project-description">
+                                A mind-bending puzzle platformer featuring innovative mechanics 
+                                and beautiful hand-crafted levels.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Unity</span>
+                                <span class="tag">2D</span>
+                                <span class="tag">Puzzle</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="project-link">View Project</a>
+                                <a href="#" class="project-link">Download</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VR/AR Projects -->
+                    <div class="project-card" data-category="vr">
+                        <div class="project-image">
+                            <div class="project-placeholder">VR Experience</div>
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">Virtual Museum Tour</h3>
+                            <p class="project-description">
+                                An immersive VR experience allowing users to explore historical 
+                                artifacts and interact with 3D reconstructions.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">VR</span>
+                                <span class="tag">Oculus</span>
+                                <span class="tag">Education</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="project-link">View Project</a>
+                                <a href="#" class="project-link">Try Demo</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" data-category="vr">
+                        <div class="project-image">
+                            <div class="project-placeholder">AR App</div>
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">AR Furniture Visualizer</h3>
+                            <p class="project-description">
+                                Mobile AR application for visualizing furniture in real spaces 
+                                with realistic lighting and shadows.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">AR</span>
+                                <span class="tag">ARCore</span>
+                                <span class="tag">Mobile</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="project-link">View Project</a>
+                                <a href="#" class="project-link">Download App</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3D Models -->
+                    <div class="project-card" data-category="3d">
+                        <div class="project-image">
+                            <div class="project-placeholder">3D Model</div>
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">Sci-Fi Character Pack</h3>
+                            <p class="project-description">
+                                Complete character pack with high-poly models, PBR textures, 
+                                and animation-ready rigs for sci-fi games.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Blender</span>
+                                <span class="tag">Character</span>
+                                <span class="tag">PBR</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="project-link">View Gallery</a>
+                                <a href="#" class="project-link">Download</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" data-category="3d">
+                        <div class="project-image">
+                            <div class="project-placeholder">3D Environment</div>
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">Medieval Fantasy Environment</h3>
+                            <p class="project-description">
+                                Detailed medieval village environment with modular buildings, 
+                                props, and atmospheric lighting setup.
+                            </p>
+                            <div class="project-tags">
+                                <span class="tag">Environment</span>
+                                <span class="tag">Maya</span>
+                                <span class="tag">Fantasy</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="project-link">Explore</a>
+                                <a href="#" class="project-link">Assets</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="section experience-section">
+            <div class="container">
+                <h2 class="section-title">Experience & Education</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Senior Game Developer</h3>
+                            <div class="timeline-meta">
+                                <span class="timeline-company">Indie Game Studio</span>
+                                <span class="timeline-date">2022 - Present</span>
+                            </div>
+                            <p class="timeline-description">
+                                Leading development of multiple Unity-based games, specializing in 
+                                VR/AR experiences and implementing advanced gameplay mechanics.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">3D Artist & Game Developer</h3>
+                            <div class="timeline-meta">
+                                <span class="timeline-company">Creative Digital Agency</span>
+                                <span class="timeline-date">2020 - 2022</span>
+                            </div>
+                            <p class="timeline-description">
+                                Created 3D assets and developed interactive applications for various 
+                                clients, focusing on AR marketing campaigns and educational games.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Junior Unity Developer</h3>
+                            <div class="timeline-meta">
+                                <span class="timeline-company">Mobile Game Company</span>
+                                <span class="timeline-date">2019 - 2020</span>
+                            </div>
+                            <p class="timeline-description">
+                                Developed mobile games using Unity, implemented monetization systems, 
+                                and optimized performance for various mobile devices.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Bachelor's in Computer Science</h3>
+                            <div class="timeline-meta">
+                                <span class="timeline-company">University of Technology</span>
+                                <span class="timeline-date">2015 - 2019</span>
+                            </div>
+                            <p class="timeline-description">
+                                Specialized in computer graphics and game development, with focus on 
+                                3D mathematics, rendering techniques, and software engineering.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section contact-section">
+            <div class="container">
+                <h2 class="section-title">Let's Work Together</h2>
+                <div class="contact-content">
+                    <div class="contact-text">
+                        <p class="contact-description">
+                            I'm always excited to take on new challenges and collaborate on 
+                            innovative projects. Whether you need a Unity developer, VR/AR specialist, 
+                            or 3D artist, let's discuss how we can bring your vision to life.
+                        </p>
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <span class="contact-label">Email</span>
+                                <a href="mailto:contact@sakanfarproductions.com" class="contact-link">
+                                    contact@sakanfarproductions.com
+                                </a>
+                            </div>
+                            <div class="contact-item">
+                                <span class="contact-label">Location</span>
+                                <span class="contact-text">Available Worldwide</span>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="contact-form">
+                        <div class="form-group">
+                            <input type="text" name="name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" name="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <select name="project-type" required>
+                                <option value="">Project Type</option>
+                                <option value="unity-game">Unity Game Development</option>
+                                <option value="vr-ar">VR/AR Application</option>
+                                <option value="3d-modeling">3D Modeling & Animation</option>
+                                <option value="consultation">Consultation</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="message" placeholder="Tell me about your project..." rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">SP</span>
+                    <span class="footer-title">Sakanfar Productions</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">LinkedIn</a>
+                    <a href="#" class="footer-link">GitHub</a>
+                    <a href="#" class="footer-link">ArtStation</a>
+                    <a href="#" class="footer-link">Unity Connect</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Sakanfar Productions. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>
