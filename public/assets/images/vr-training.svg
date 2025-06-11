@@ -1,0 +1,20 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="trainingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff5722;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ff9800;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffc107;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#trainingGrad)"/>
+  <rect x="100" y="80" width="200" height="120" fill="rgba(255,255,255,0.9)" rx="10"/>
+  <rect x="110" y="90" width="180" height="80" fill="#2c3e50"/>
+  <rect x="120" y="100" width="20" height="60" fill="#e74c3c"/>
+  <rect x="150" y="110" width="20" height="50" fill="#f39c12"/>
+  <rect x="180" y="105" width="20" height="55" fill="#27ae60"/>
+  <rect x="210" y="115" width="20" height="45" fill="#3498db"/>
+  <rect x="240" y="120" width="20" height="40" fill="#9b59b6"/>
+  <rect x="270" y="125" width="20" height="35" fill="#e67e22"/>
+  <circle cx="200" cy="40" r="15" fill="rgba(255,255,255,0.8)"/>
+  <text x="200" y="270" text-anchor="middle" fill="white" font-family="Arial" font-size="18" font-weight="bold">VR Training Simulation</text>
+</svg>

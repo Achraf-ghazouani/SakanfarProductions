@@ -5,7 +5,7 @@ export const projectsData = {
             id: 'epic-rpg',
             title: 'Epic Adventure RPG',
             description: 'A fully-featured RPG with complex combat system, inventory management, and immersive storytelling built in Unity.',
-            image: '/assets/images/epic-rpg.jpg',
+            image: '/assets/images/epic-rpg.svg',
             tags: ['Unity', 'C#', 'RPG', '3D'],
             links: {
                 demo: '#',
@@ -20,7 +20,7 @@ export const projectsData = {
             id: 'puzzle-platformer',
             title: 'Puzzle Platformer',
             description: 'A mind-bending puzzle platformer featuring innovative mechanics and beautiful hand-crafted levels.',
-            image: '/assets/images/puzzle-platformer.jpg',
+            image: '/assets/images/puzzle-platformer.svg',
             tags: ['Unity', '2D', 'Puzzle', 'Indie'],
             links: {
                 demo: '#',
@@ -35,7 +35,7 @@ export const projectsData = {
             id: 'racing-game',
             title: 'Street Racing Championship',
             description: 'High-speed racing game with realistic physics and customizable vehicles.',
-            image: '/assets/images/racing-game.jpg',
+            image: '/assets/images/racing-game.svg',
             tags: ['Unity', '3D', 'Racing', 'Physics'],
             links: {
                 demo: '#',
@@ -51,7 +51,7 @@ export const projectsData = {
             id: 'virtual-museum',
             title: 'Virtual Museum Tour',
             description: 'An immersive VR experience allowing users to explore historical artifacts and interact with 3D reconstructions.',
-            image: '/assets/images/virtual-museum.jpg',
+            image: '/assets/images/virtual-museum.svg',
             tags: ['VR', 'Oculus', 'Education', 'History'],
             links: {
                 demo: '#',
@@ -65,7 +65,7 @@ export const projectsData = {
             id: 'ar-furniture',
             title: 'AR Furniture Visualizer',
             description: 'Mobile AR application for visualizing furniture in real spaces with realistic lighting and shadows.',
-            image: '/assets/images/ar-furniture.jpg',
+            image: '/assets/images/ar-furniture.svg',
             tags: ['AR', 'ARCore', 'Mobile', 'Retail'],
             links: {
                 demo: '#',
@@ -80,7 +80,7 @@ export const projectsData = {
             id: 'vr-training',
             title: 'Industrial VR Training',
             description: 'Virtual reality training simulation for industrial safety procedures and equipment operation.',
-            image: '/assets/images/vr-training.jpg',
+            image: '/assets/images/vr-training.svg',
             tags: ['VR', 'Training', 'Simulation', 'Enterprise'],
             links: {
                 demo: '#',
@@ -96,7 +96,7 @@ export const projectsData = {
             id: 'sci-fi-characters',
             title: 'Sci-Fi Character Pack',
             description: 'Complete character pack with high-poly models, PBR textures, and animation-ready rigs for sci-fi games.',
-            image: '/assets/images/sci-fi-characters.jpg',
+            image: '/assets/images/sci-fi-characters.svg',
             tags: ['Blender', 'Character', 'PBR', 'Animation'],
             links: {
                 gallery: '#',

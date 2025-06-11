@@ -1,0 +1,19 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="arGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#11998e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#38ada9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#78e08f;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#arGrad)"/>
+  <rect x="50" y="150" width="80" height="100" fill="rgba(255,255,255,0.8)"/>
+  <rect x="55" y="155" width="70" height="30" fill="#8b4513"/>
+  <rect x="55" y="185" width="70" height="2" fill="#654321"/>
+  <rect x="55" y="190" width="70" height="60" fill="#daa520"/>
+  <rect x="270" y="120" width="60" height="120" fill="rgba(255,255,255,0.8)"/>
+  <rect x="275" y="125" width="50" height="20" fill="#ff6b6b"/>
+  <rect x="275" y="150" width="50" height="85" fill="#4ecdc4"/>
+  <circle cx="200" cy="100" r="20" fill="rgba(255,255,255,0.5)" stroke="white" stroke-width="2" fill="none"/>
+  <text x="200" y="270" text-anchor="middle" fill="white" font-family="Arial" font-size="18" font-weight="bold">AR Furniture Visualizer</text>
+</svg>
