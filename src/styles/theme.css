@@ -1,0 +1,422 @@
+/* Light Theme Styles */
+:root {
+    /* Light theme colors */
+    --color-background: #ffffff;
+    --color-primary: #2563eb;
+    --color-secondary: #7c3aed;
+    --color-text: #1f2937;
+    --color-accent: #0ea5e9;
+    --color-surface: #f8fafc;
+    --color-border: #e2e8f0;
+    --color-muted: #6b7280;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+}
+
+[data-theme="light"] {
+    --color-background: #ffffff;
+    --color-primary: #2563eb;
+    --color-secondary: #7c3aed;
+    --color-text: #1f2937;
+    --color-accent: #0ea5e9;
+    --color-surface: #f8fafc;
+    --color-border: #e2e8f0;
+    --color-muted: #6b7280;
+}
+
+[data-theme="dark"] {
+    --color-background: #0a0a0a;
+    --color-primary: #00d4ff;
+    --color-secondary: #7b2cbf;
+    --color-text: #ffffff;
+    --color-accent: #00d4ff;
+    --color-surface: #1a1a2e;
+    --color-border: #2d2d3a;
+    --color-muted: #9ca3af;
+}
+
+/* Light theme body styles */
+[data-theme="light"] body {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    color: var(--color-text);
+}
+
+[data-theme="light"] .nav {
+    background: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid var(--color-border);
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .nav-title,
+[data-theme="light"] .nav-link {
+    color: var(--color-text);
+}
+
+[data-theme="light"] .nav-link:hover,
+[data-theme="light"] .nav-link.active {
+    color: var(--color-primary);
+}
+
+[data-theme="light"] .nav-link::after {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+}
+
+/* Light theme sections */
+[data-theme="light"] .hero-section {
+    background: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.1) 0%, transparent 70%);
+}
+
+[data-theme="light"] .about-section {
+    background: rgba(248, 250, 252, 0.7);
+}
+
+[data-theme="light"] .skills-section {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="light"] .projects-section {
+    background: rgba(248, 250, 252, 0.7);
+}
+
+[data-theme="light"] .experience-section {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="light"] .contact-section {
+    background: rgba(248, 250, 252, 0.7);
+}
+
+/* Light theme text colors */
+[data-theme="light"] .section-title {
+    background: linear-gradient(135deg, var(--color-text), var(--color-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+[data-theme="light"] .hero-name {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+[data-theme="light"] .hero-greeting {
+    color: var(--color-muted);
+}
+
+[data-theme="light"] .hero-subtitle {
+    color: var(--color-text);
+}
+
+[data-theme="light"] .hero-description {
+    color: var(--color-muted);
+}
+
+[data-theme="light"] .stat-number {
+    color: var(--color-primary);
+}
+
+[data-theme="light"] .stat-label {
+    color: var(--color-muted);
+}
+
+/* Light theme buttons */
+[data-theme="light"] .btn-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: white;
+}
+
+[data-theme="light"] .btn-primary:hover {
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+}
+
+[data-theme="light"] .btn-secondary {
+    background: transparent;
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+}
+
+[data-theme="light"] .btn-secondary:hover {
+    background: var(--color-surface);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* Light theme cards and containers */
+[data-theme="light"] .highlight-item,
+[data-theme="light"] .skill-category,
+[data-theme="light"] .project-card,
+[data-theme="light"] .timeline-content {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .highlight-item:hover,
+[data-theme="light"] .project-card:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: var(--color-primary);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+}
+
+[data-theme="light"] .highlight-item h3,
+[data-theme="light"] .category-title,
+[data-theme="light"] .project-title,
+[data-theme="light"] .timeline-title {
+    color: var(--color-text);
+}
+
+[data-theme="light"] .highlight-item p,
+[data-theme="light"] .project-description,
+[data-theme="light"] .timeline-description {
+    color: var(--color-muted);
+}
+
+/* Light theme skills */
+[data-theme="light"] .skill-name {
+    color: var(--color-text);
+}
+
+[data-theme="light"] .skill-percentage {
+    color: var(--color-primary);
+}
+
+[data-theme="light"] .skill-bar {
+    background: var(--color-border);
+}
+
+[data-theme="light"] .skill-progress {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+}
+
+/* Light theme project elements */
+[data-theme="light"] .project-image {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.1));
+}
+
+[data-theme="light"] .project-placeholder {
+    color: var(--color-muted);
+}
+
+[data-theme="light"] .tag {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--color-primary);
+}
+
+[data-theme="light"] .tech-badge {
+    background: rgba(124, 58, 237, 0.1);
+    color: var(--color-secondary);
+}
+
+[data-theme="light"] .project-link {
+    color: var(--color-primary);
+}
+
+[data-theme="light"] .project-link:hover {
+    color: var(--color-secondary);
+}
+
+/* Light theme timeline */
+[data-theme="light"] .timeline::before {
+    background: linear-gradient(180deg, var(--color-primary), var(--color-secondary));
+}
+
+[data-theme="light"] .timeline-marker {
+    border-color: var(--color-background);
+}
+
+[data-theme="light"] .timeline-marker.work {
+    background: var(--color-primary);
+}
+
+[data-theme="light"] .timeline-marker.education {
+    background: var(--color-secondary);
+}
+
+[data-theme="light"] .timeline-company {
+    color: var(--color-primary);
+}
+
+[data-theme="light"] .timeline-date {
+    color: var(--color-muted);
+}
+
+[data-theme="light"] .timeline-achievements li {
+    color: var(--color-muted);
+}
+
+[data-theme="light"] .timeline-achievements li::before {
+    color: var(--color-primary);
+}
+
+[data-theme="light"] .tech-tag {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--color-primary);
+}
+
+/* Light theme form elements */
+[data-theme="light"] .contact-description {
+    color: var(--color-muted);
+}
+
+[data-theme="light"] .contact-label {
+    color: var(--color-primary);
+}
+
+[data-theme="light"] .contact-link {
+    color: var(--color-text);
+}
+
+[data-theme="light"] .contact-link:hover {
+    color: var(--color-primary);
+}
+
+[data-theme="light"] .contact-text {
+    color: var(--color-muted);
+}
+
+[data-theme="light"] .contact-form input,
+[data-theme="light"] .contact-form select,
+[data-theme="light"] .contact-form textarea {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+}
+
+[data-theme="light"] .contact-form input:focus,
+[data-theme="light"] .contact-form select:focus,
+[data-theme="light"] .contact-form textarea:focus {
+    border-color: var(--color-primary);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+[data-theme="light"] .contact-form input::placeholder,
+[data-theme="light"] .contact-form textarea::placeholder {
+    color: var(--color-muted);
+}
+
+/* Light theme footer */
+[data-theme="light"] .footer {
+    background: rgba(255, 255, 255, 0.9);
+    border-top: 1px solid var(--color-border);
+}
+
+[data-theme="light"] .footer-title {
+    color: var(--color-text);
+}
+
+[data-theme="light"] .footer-link {
+    color: var(--color-muted);
+}
+
+[data-theme="light"] .footer-link:hover {
+    color: var(--color-primary);
+}
+
+[data-theme="light"] .footer-bottom p {
+    color: var(--color-muted);
+}
+
+/* Light theme filter buttons */
+[data-theme="light"] .filter-btn {
+    color: var(--color-muted);
+    border-color: var(--color-border);
+}
+
+[data-theme="light"] .filter-btn:hover,
+[data-theme="light"] .filter-btn.active {
+    color: var(--color-text);
+    border-color: var(--color-primary);
+    background: rgba(37, 99, 235, 0.1);
+}
+
+/* Light theme loading screen */
+[data-theme="light"] #loading-screen {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+[data-theme="light"] .loading-spinner {
+    border-color: var(--color-border);
+    border-top-color: var(--color-primary);
+}
+
+[data-theme="light"] .loading-text {
+    color: var(--color-text);
+}
+
+[data-theme="light"] .loading-bar {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+}
+
+/* Theme toggle button styles */
+.theme-toggle {
+    position: relative;
+    background: none;
+    border: 2px solid var(--color-border);
+    border-radius: 50px;
+    width: 50px;
+    height: 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 20px;
+    overflow: hidden;
+}
+
+.theme-toggle:hover {
+    border-color: var(--color-primary);
+}
+
+.theme-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    transition: opacity 0.3s ease;
+}
+
+.theme-icon.sun {
+    opacity: 1;
+}
+
+.theme-icon.moon {
+    opacity: 0;
+}
+
+[data-theme="light"] .theme-icon.sun {
+    opacity: 0;
+}
+
+[data-theme="light"] .theme-icon.moon {
+    opacity: 1;
+}
+
+/* Smooth transitions for theme switching */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
+}
+
+/* Light theme Three.js canvas adjustments */
+[data-theme="light"] #webgl-canvas {
+    opacity: 0.7;
+}
+
+/* Light theme scroll indicator */
+[data-theme="light"] .scroll-indicator {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+}
+
+/* Light theme responsive adjustments */
+@media (max-width: 768px) {
+    [data-theme="light"] .nav-menu {
+        background: rgba(255, 255, 255, 0.95);
+    }
+    
+    .theme-toggle {
+        width: 45px;
+        height: 25px;
+        margin-left: 15px;
+    }
+}

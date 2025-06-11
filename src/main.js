@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { AnimationUtils, ScrollAnimations, InteractionEffects, MobileOptimizations } from './scripts/animations.js';
+import PortfolioRenderer from './scripts/portfolio-renderer.js';
+import ThemeManager from './scripts/theme-manager.js';
+import PerformanceMonitor from './scripts/performance-monitor.js';
 import { 
     particleVertexShader, 
     particleFragmentShader, 
@@ -20,11 +23,16 @@ class Portfolio3D {
         this.geometryShapes = [];
         this.mouse = new THREE.Vector2();
         this.windowHalf = new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2);
+        this.themeManager = null;
+        this.performanceMonitor = null;
+        this.particleCount = 2000; // Default particle count
         
         this.init();
         this.setupEventListeners();
         this.animate();
         this.setupScrollAnimations();
+        this.setupThemeListener();
+        this.setupPerformanceOptimization();
     }
 
     init() {
@@ -70,16 +78,15 @@ class Portfolio3D {
         // Create floating geometric shapes
         this.createGeometryShapes();
     }    createParticles() {
-        const particleCount = 2000;
-        const positions = new Float32Array(particleCount * 3);
-        const colors = new Float32Array(particleCount * 3);
-        const randomness = new Float32Array(particleCount * 3);
+        const positions = new Float32Array(this.particleCount * 3);
+        const colors = new Float32Array(this.particleCount * 3);
+        const randomness = new Float32Array(this.particleCount * 3);
 
         const color1 = new THREE.Color(0x00d4ff);
         const color2 = new THREE.Color(0x7b2cbf);
         const color3 = new THREE.Color(0xffffff);
 
-        for (let i = 0; i < particleCount; i++) {
+        for (let i = 0; i < this.particleCount; i++) {
             // Position - create a galaxy-like distribution
             const radius = Math.random() * 50;
             const spinAngle = radius * 0.1;
@@ -131,25 +138,32 @@ class Portfolio3D {
         });
 
         this.particles = new THREE.Points(geometry, material);
+        this.particles.name = 'particles'; // Add name for easier identification
         this.scene.add(this.particles);
-    }
-
-    createGeometryShapes() {
+    }createGeometryShapes() {
         const shapes = [
-            { geometry: new THREE.IcosahedronGeometry(0.5, 1), position: [-8, 4, -5] },
-            { geometry: new THREE.OctahedronGeometry(0.7), position: [8, -4, -3] },
-            { geometry: new THREE.TetrahedronGeometry(0.6), position: [-6, -6, -4] },
-            { geometry: new THREE.DodecahedronGeometry(0.5), position: [6, 6, -6] },
-            { geometry: new THREE.ConeGeometry(0.5, 1, 8), position: [4, -2, -2] },
-            { geometry: new THREE.CylinderGeometry(0.3, 0.3, 1, 8), position: [-4, 2, -3] }
+            { geometry: new THREE.IcosahedronGeometry(0.8, 1), position: [-10, 6, -8] },
+            { geometry: new THREE.OctahedronGeometry(1.2), position: [12, -6, -5] },
+            { geometry: new THREE.TetrahedronGeometry(1.0), position: [-8, -8, -6] },
+            { geometry: new THREE.DodecahedronGeometry(0.9), position: [10, 8, -10] },
+            { geometry: new THREE.ConeGeometry(0.8, 1.5, 8), position: [6, -4, -4] },
+            { geometry: new THREE.CylinderGeometry(0.5, 0.5, 1.5, 12), position: [-6, 4, -5] },
+            { geometry: new THREE.TorusGeometry(0.8, 0.3, 8, 16), position: [4, 2, -7] },
+            { geometry: new THREE.TorusKnotGeometry(0.6, 0.2, 64, 8), position: [-4, -2, -8] }
         ];
 
         shapes.forEach((shapeData, index) => {
-            const material = new THREE.MeshPhongMaterial({
-                color: index % 2 === 0 ? 0x00d4ff : 0x7b2cbf,
+            // Use custom shader material for enhanced visuals
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    uTime: { value: 0 },
+                    uColor1: { value: new THREE.Color(index % 2 === 0 ? 0x00d4ff : 0x7b2cbf) },
+                    uColor2: { value: new THREE.Color(index % 2 === 0 ? 0x7b2cbf : 0x00d4ff) }
+                },
+                vertexShader: geometryVertexShader,
+                fragmentShader: geometryFragmentShader,
                 transparent: true,
-                opacity: 0.7,
-                wireframe: Math.random() > 0.5
+                wireframe: Math.random() > 0.6
             });
 
             const mesh = new THREE.Mesh(shapeData.geometry, material);
@@ -159,6 +173,18 @@ class Portfolio3D {
                 Math.random() * Math.PI,
                 Math.random() * Math.PI
             );
+
+            // Add custom properties for animation
+            mesh.userData = {
+                originalPosition: new THREE.Vector3(...shapeData.position),
+                rotationSpeed: {
+                    x: (Math.random() - 0.5) * 0.02,
+                    y: (Math.random() - 0.5) * 0.02,
+                    z: (Math.random() - 0.5) * 0.02
+                },
+                floatSpeed: Math.random() * 0.001 + 0.001,
+                floatAmplitude: Math.random() * 2 + 1
+            };
 
             this.geometryShapes.push(mesh);
             this.scene.add(mesh);
@@ -286,31 +312,47 @@ class Portfolio3D {
                 }
             }
         );
-    }
-
-    animate() {
+    }    animate() {
         requestAnimationFrame(this.animate.bind(this));
 
         const time = Date.now() * 0.0005;
 
-        // Rotate particles
-        if (this.particles) {
-            this.particles.rotation.x = time * 0.1;
-            this.particles.rotation.y = time * 0.15;
+        // Update particle shader uniforms
+        if (this.particles && this.particles.material.uniforms) {
+            this.particles.material.uniforms.uTime.value = time;
+            this.particles.rotation.y = time * 0.05;
         }
 
-        // Animate geometry shapes
+        // Animate geometry shapes with individual behaviors
         this.geometryShapes.forEach((shape, index) => {
-            shape.rotation.x += 0.01 * (index + 1);
-            shape.rotation.y += 0.01 * (index + 1);
-            shape.position.y += Math.sin(time + index) * 0.002;
+            if (shape.userData) {
+                // Rotation
+                shape.rotation.x += shape.userData.rotationSpeed.x;
+                shape.rotation.y += shape.userData.rotationSpeed.y;
+                shape.rotation.z += shape.userData.rotationSpeed.z;
+
+                // Floating motion
+                const floatOffset = Math.sin(time * shape.userData.floatSpeed + index) * shape.userData.floatAmplitude;
+                shape.position.y = shape.userData.originalPosition.y + floatOffset;
+
+                // Update shader uniforms if using custom material
+                if (shape.material.uniforms) {
+                    shape.material.uniforms.uTime.value = time;
+                }
+            }
         });
 
-        // Mouse interaction
-        this.camera.position.x += (this.mouse.x * 0.5 - this.camera.position.x) * 0.03;
-        this.camera.position.y += (-this.mouse.y * 0.5 - this.camera.position.y) * 0.03;
+        // Enhanced mouse interaction with smoothing
+        const targetX = this.mouse.x * 1.2;
+        const targetY = -this.mouse.y * 1.2;
+        
+        this.camera.position.x += (targetX - this.camera.position.x) * 0.02;
+        this.camera.position.y += (targetY - this.camera.position.y) * 0.02;
+        
+        // Subtle camera rotation
+        this.camera.rotation.z = -this.camera.position.x * 0.05;
+        
         this.camera.lookAt(this.scene.position);
-
         this.renderer.render(this.scene, this.camera);
     }
 
@@ -367,6 +409,147 @@ class Portfolio3D {
             }
         });
     }
+
+    setupThemeListener() {
+        // Listen for theme changes and update Three.js scene accordingly
+        window.addEventListener('themeChanged', (event) => {
+            this.updateSceneTheme(event.detail.theme);
+        });
+    }
+
+    updateSceneTheme(theme) {
+        const colors = {
+            light: {
+                background: 0xffffff,
+                primary: 0x2563eb,
+                secondary: 0x7c3aed,
+                fog: 0xf8fafc
+            },
+            dark: {
+                background: 0x0a0a0a,
+                primary: 0x00d4ff,
+                secondary: 0x7b2cbf,
+                fog: 0x0a0a0a
+            }
+        };
+
+        const themeColors = colors[theme];
+
+        // Update renderer background
+        this.renderer.setClearColor(themeColors.background, theme === 'light' ? 0.1 : 0);
+
+        // Update fog
+        if (this.scene.fog) {
+            this.scene.fog.color.setHex(themeColors.fog);
+        }
+
+        // Update particle colors
+        if (this.particles && this.particles.material.uniforms) {
+            this.particles.material.uniforms.uColor1.value.setHex(themeColors.primary);
+            this.particles.material.uniforms.uColor2.value.setHex(themeColors.secondary);
+        }
+
+        // Update geometry shapes
+        this.geometryShapes.forEach((shape, index) => {
+            if (shape.material.uniforms) {
+                shape.material.uniforms.uColor1.value.setHex(
+                    index % 2 === 0 ? themeColors.primary : themeColors.secondary
+                );
+                shape.material.uniforms.uColor2.value.setHex(
+                    index % 2 === 0 ? themeColors.secondary : themeColors.primary
+                );
+            }
+        });
+
+        // Update lighting for light theme
+        this.scene.traverse((child) => {
+            if (child.isDirectionalLight) {
+                child.intensity = theme === 'light' ? 0.8 : 1;
+            }
+            if (child.isAmbientLight) {
+                child.intensity = theme === 'light' ? 0.6 : 0.4;
+            }
+        });
+    }
+
+    setupPerformanceOptimization() {
+        // Listen for performance optimization events
+        window.addEventListener('optimizePerformance', (event) => {
+            this.applyPerformanceOptimizations(event.detail);
+        });
+    }
+
+    applyPerformanceOptimizations(settings) {
+        console.log('Applying performance optimizations:', settings);
+
+        // Adjust particle count
+        if (settings.particleCount && settings.particleCount !== this.particleCount) {
+            this.particleCount = settings.particleCount;
+            this.recreateParticles();
+        }
+
+        // Disable advanced effects if needed
+        if (settings.disableAdvancedEffects) {
+            this.geometryShapes.forEach(shape => {
+                if (shape.material.wireframe !== undefined) {
+                    shape.material.wireframe = true; // Wireframe is less intensive
+                }
+            });
+        }
+
+        // Reduce geometry complexity
+        if (settings.reduceQuality) {
+            this.geometryShapes.forEach(shape => {
+                if (shape.geometry.dispose) {
+                    shape.geometry.dispose();
+                }
+            });
+            // Recreate with lower detail
+            this.createSimpleGeometry();
+        }
+    }
+
+    recreateParticles() {
+        // Remove existing particles
+        if (this.particles) {
+            this.scene.remove(this.particles);
+            this.particles.geometry.dispose();
+            this.particles.material.dispose();
+        }
+
+        // Create new particles with updated count
+        this.createParticles();
+    }
+
+    createSimpleGeometry() {
+        // Remove existing geometry
+        this.geometryShapes.forEach(shape => {
+            this.scene.remove(shape);
+        });
+        this.geometryShapes = [];
+
+        // Create simpler geometry for performance
+        const simpleShapes = [
+            { geometry: new THREE.BoxGeometry(1, 1, 1), position: [-8, 4, -5] },
+            { geometry: new THREE.SphereGeometry(0.8, 8, 6), position: [8, -4, -3] },
+            { geometry: new THREE.ConeGeometry(0.6, 1, 6), position: [-6, -6, -4] },
+        ];
+
+        simpleShapes.forEach((shapeData, index) => {
+            const material = new THREE.MeshBasicMaterial({
+                color: index % 2 === 0 ? 0x00d4ff : 0x7b2cbf,
+                wireframe: true
+            });
+
+            const mesh = new THREE.Mesh(shapeData.geometry, material);
+            mesh.position.set(...shapeData.position);
+
+            this.geometryShapes.push(mesh);
+            this.scene.add(mesh);
+        });
+    }
+
+    // ...existing code...
 }
 
 // Initialize loading screen and portfolio
@@ -395,9 +578,7 @@ class LoadingManager {
         if (this.loadingBar) {
             this.loadingBar.style.width = `${this.progress}%`;
         }
-    }
-
-    hideLoadingScreen() {
+    }    hideLoadingScreen() {
         gsap.to(this.loadingScreen, {
             opacity: 0,
             duration: 1,
@@ -405,7 +586,21 @@ class LoadingManager {
             onComplete: () => {
                 this.loadingScreen.style.display = 'none';
                 // Initialize portfolio after loading
-                new Portfolio3D();
+                const portfolio3D = new Portfolio3D();
+                // Initialize portfolio content renderer
+                new PortfolioRenderer();
+                // Initialize theme manager
+                const themeManager = new ThemeManager();
+                // Initialize performance monitor
+                const performanceMonitor = new PerformanceMonitor();
+                
+                // Set references
+                portfolio3D.themeManager = themeManager;
+                portfolio3D.performanceMonitor = performanceMonitor;
+                
+                // Apply initial theme to 3D scene
+                const initialTheme = themeManager.currentTheme;
+                portfolio3D.updateSceneTheme(initialTheme);
             }
         });
     }
@@ -426,6 +621,11 @@ window.scrollToSection = function(sectionId) {
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new LoadingManager();
+    
+    // Initialize additional features
+    new ScrollAnimations();
+    new InteractionEffects();
+    new MobileOptimizations();
     
     // Mobile menu toggle
     const navToggle = document.querySelector('.nav-toggle');
@@ -449,6 +649,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
+    });
+
+    // Add scroll progress indicator
+    const scrollIndicator = document.createElement('div');
+    scrollIndicator.className = 'scroll-indicator';
+    document.body.appendChild(scrollIndicator);
+
+    window.addEventListener('scroll', () => {
+        const scrolled = (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+        scrollIndicator.style.transform = `scaleX(${scrolled / 100})`;
+    });
+
+    // Performance optimization: Reduce animations on low-end devices
+    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) {
+        document.documentElement.classList.add('low-performance');
+    }
+
+    // Keyboard navigation support
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 't' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            const themeToggle = document.querySelector('.theme-toggle');
+            if (themeToggle) {
+                themeToggle.click();
+            }
+        }
     });
 });
 
