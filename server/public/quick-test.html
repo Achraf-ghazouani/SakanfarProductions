@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel Quick Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .step { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+        button { padding: 10px 15px; margin: 5px; }
+        .result { margin: 10px 0; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel Quick Test</h1>
+    <p><strong>Issue:</strong> Buttons not working because main app is hidden until login!</p>
+    
+    <div class="step">
+        <h3>Step 1: Check Admin Panel Elements</h3>
+        <button onclick="checkElements()">Check Elements</button>
+        <div id="elements-result" class="result"></div>
+    </div>
+    
+    <div class="step">
+        <h3>Step 2: Perform Login</h3>
+        <button onclick="performLogin()">Login as admin/admin123</button>
+        <div id="login-result" class="result"></div>
+    </div>
+    
+    <div class="step">
+        <h3>Step 3: Test Buttons After Login</h3>
+        <button onclick="testButtonsAfterLogin()">Test Skill/Project Buttons</button>
+        <div id="buttons-result" class="result"></div>
+    </div>
+    
+    <div class="step">
+        <h3>Instructions for Manual Test:</h3>
+        <ol>
+            <li>Open <a href="/admin" target="_blank">Admin Panel</a> in new tab</li>
+            <li>Login with: <strong>admin</strong> / <strong>admin123</strong></li>
+            <li>After login, you should see the dashboard with tabs</li>
+            <li>Go to "Skills" tab and click "Add New Skill" - modal should open</li>
+            <li>Go to "Projects" tab and click "Add New Project" - modal should open</li>
+        </ol>
+    </div>
+
+    <script>
+        function checkElements() {
+            const result = document.getElementById('elements-result');
+            
+            // Check if we can reach the admin panel
+            fetch('/admin')
+                .then(response => response.text())
+                .then(html => {
+                    // Check if main-app exists in HTML
+                    if (html.includes('id="main-app"')) {
+                        result.innerHTML = '✅ Admin panel HTML contains main-app element';
+                        result.className = 'result success';
+                        
+                        // Check if main-app is hidden by default
+                        if (html.includes('#main-app') && html.includes('display: none')) {
+                            result.innerHTML += '<br>✅ Confirmed: main-app is hidden by default (this is why buttons don\'t work before login!)';
+                        }
+                    } else {
+                        result.innerHTML = '❌ Admin panel HTML structure issue';
+                        result.className = 'result error';
+                    }
+                })
+                .catch(error => {
+                    result.innerHTML = '❌ Cannot reach admin panel: ' + error.message;
+                    result.className = 'result error';
+                });
+        }
+        
+        async function performLogin() {
+            const result = document.getElementById('login-result');
+            result.innerHTML = 'Attempting login...';
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: 'admin123' })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    result.innerHTML = '✅ Login successful! Token received.';
+                    result.className = 'result success';
+                    localStorage.setItem('admin_token', data.token);
+                } else {
+                    result.innerHTML = '❌ Login failed: ' + data.error;
+                    result.className = 'result error';
+                }
+            } catch (error) {
+                result.innerHTML = '❌ Login error: ' + error.message;
+                result.className = 'result error';
+            }
+        }
+        
+        async function testButtonsAfterLogin() {
+            const result = document.getElementById('buttons-result');
+            const token = localStorage.getItem('admin_token');
+            
+            if (!token) {
+                result.innerHTML = '❌ Please login first!';
+                result.className = 'result error';
+                return;
+            }
+            
+            result.innerHTML = 'Testing admin functions...';
+            
+            try {
+                // Test skill creation
+                const skillResponse = await fetch('/api/admin/skills', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        name: 'Test Quick Skill',
+                        category: 'Programming Languages',
+                        percentage: 75
+                    })
+                });
+                
+                if (skillResponse.ok) {
+                    const skillData = await skillResponse.json();
+                    result.innerHTML = '✅ Backend API works! Created skill with ID: ' + skillData.id;
+                    result.className = 'result success';
+                    result.innerHTML += '<br><strong>The issue is frontend only - buttons should work after login!</strong>';
+                    
+                    // Clean up - delete the test skill
+                    await fetch(`/api/admin/skills/${skillData.id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    result.innerHTML += '<br>(Test skill cleaned up)';
+                } else {
+                    result.innerHTML = '❌ API test failed';
+                    result.className = 'result error';
+                }
+            } catch (error) {
+                result.innerHTML = '❌ API test error: ' + error.message;
+                result.className = 'result error';
+            }
+        }
+    </script>
+</body>
+</html>

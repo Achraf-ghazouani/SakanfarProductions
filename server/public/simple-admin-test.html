@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Admin Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; }
+        #log { background: #f0f0f0; padding: 10px; margin: 10px 0; height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>Simple Admin Test</h1>
+    
+    <div>
+        <button onclick="testDirectModalOpen()">Test Direct Modal Open</button>
+        <button onclick="testAdminObject()">Test Admin Object</button>
+        <button onclick="loginAndTest()">Login and Test</button>
+    </div>
+    
+    <div id="log"></div>
+    
+    <!-- Simple modal for testing -->
+    <div id="test-modal" class="modal">
+        <div class="modal-content">
+            <h3>Test Modal</h3>
+            <p>This modal opened successfully!</p>
+            <button onclick="closeTestModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function log(msg) {
+            document.getElementById('log').innerHTML += new Date().toLocaleTimeString() + ': ' + msg + '<br>';
+        }
+        
+        function testDirectModalOpen() {
+            log('Testing direct modal open...');
+            const modal = document.getElementById('test-modal');
+            if (modal) {
+                modal.classList.add('show');
+                log('✅ Modal opened directly');
+            } else {
+                log('❌ Modal element not found');
+            }
+        }
+        
+        function closeTestModal() {
+            document.getElementById('test-modal').classList.remove('show');
+        }
+        
+        function testAdminObject() {
+            log('Testing admin object...');
+            
+            // Test if admin is defined
+            if (typeof admin !== 'undefined') {
+                log('✅ admin object exists');
+                log('admin type: ' + typeof admin);
+                
+                // List methods
+                if (admin && typeof admin === 'object') {
+                    const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(admin));
+                    log('Available methods: ' + methods.join(', '));
+                    
+                    // Test openSkillModal
+                    if (typeof admin.openSkillModal === 'function') {
+                        log('✅ openSkillModal method exists');
+                        try {
+                            admin.openSkillModal();
+                            log('✅ openSkillModal called successfully');
+                        } catch (error) {
+                            log('❌ openSkillModal error: ' + error.message);
+                        }
+                    } else {
+                        log('❌ openSkillModal method not found');
+                    }
+                }
+            } else {
+                log('❌ admin object not defined');
+            }
+        }
+        
+        async function loginAndTest() {
+            log('Attempting login...');
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: 'admin123' })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    log('✅ Login successful');
+                    localStorage.setItem('admin_token', data.token);
+                    
+                    // Now test admin object
+                    setTimeout(() => {
+                        testAdminObject();
+                    }, 1000);
+                } else {
+                    log('❌ Login failed: ' + data.error);
+                }
+            } catch (error) {
+                log('❌ Login error: ' + error.message);
+            }
+        }
+        
+        // Load the admin.js script
+        const script = document.createElement('script');
+        script.src = '/admin/admin.js';
+        script.onload = () => {
+            log('✅ admin.js loaded');
+            testAdminObject();
+        };
+        script.onerror = () => {
+            log('❌ Failed to load admin.js');
+        };
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>

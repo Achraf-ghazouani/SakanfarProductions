@@ -36,12 +36,22 @@ class AdminDashboard {
         const aboutForm = document.getElementById('about-form');
         if (aboutForm) {
             aboutForm.addEventListener('submit', (e) => this.handleAboutSubmit(e));
-        }
-
-        // Settings form
+        }        // Settings form
         const settingsForm = document.getElementById('settings-form');
         if (settingsForm) {
             settingsForm.addEventListener('submit', (e) => this.handleSettingsSubmit(e));
+        }
+
+        // Project form
+        const projectForm = document.getElementById('project-form');
+        if (projectForm) {
+            projectForm.addEventListener('submit', (e) => this.handleProjectSubmit(e));
+        }
+
+        // Skill form
+        const skillForm = document.getElementById('skill-form');
+        if (skillForm) {
+            skillForm.addEventListener('submit', (e) => this.handleSkillSubmit(e));
         }
     }
 
@@ -214,35 +224,39 @@ class AdminDashboard {
             console.error('Failed to load projects:', error);
             this.showAlert('projects-alert', 'Failed to load projects', 'error');
         }
-    }
-
-    renderProjectsList(projects) {
+    }    renderProjectsList(projects) {
         const container = document.getElementById('projects-list');
         
-        if (projects.length === 0) {
-            container.innerHTML = '<p>No projects found. <a href="#" onclick="admin.openProjectModal()">Add your first project</a></p>';
-            return;
-        }
+        let html = `
+            <div class="section-header">
+                <button class="btn btn-success" onclick="admin.openProjectModal()">Add New Project</button>
+            </div>
+            <div id="projects-alert"></div>
+        `;
 
-        let html = '<div class="projects-grid">';
-        projects.forEach(project => {
-            html += `
-                <div class="project-card">
-                    <h3>${project.title}</h3>
-                    <p>${project.description || 'No description'}</p>
-                    <div class="project-meta">
-                        <span class="badge">${project.category}</span>
-                        ${project.is_featured ? '<span class="badge featured">Featured</span>' : ''}
-                        <span class="year">${project.year || 'N/A'}</span>
+        if (projects.length === 0) {
+            html += '<p>No projects found. Click "Add New Project" to get started.</p>';
+        } else {
+            html += '<div class="projects-grid">';
+            projects.forEach(project => {
+                html += `
+                    <div class="project-card">
+                        <h3>${project.title}</h3>
+                        <p>${project.description || 'No description'}</p>
+                        <div class="project-meta">
+                            <span class="badge">${project.category}</span>
+                            ${project.is_featured ? '<span class="badge featured">Featured</span>' : ''}
+                            <span class="year">${project.year || 'N/A'}</span>
+                        </div>
+                        <div class="project-actions">
+                            <button class="btn btn-sm" onclick="admin.editProject(${project.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="admin.deleteProject(${project.id})">Delete</button>
+                        </div>
                     </div>
-                    <div class="project-actions">
-                        <button class="btn btn-sm" onclick="admin.editProject(${project.id})">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="admin.deleteProject(${project.id})">Delete</button>
-                    </div>
-                </div>
-            `;
-        });
-        html += '</div>';
+                `;
+            });
+            html += '</div>';
+        }
 
         container.innerHTML = html;
     }
@@ -343,35 +357,228 @@ class AdminDashboard {
         setTimeout(() => {
             container.innerHTML = '';
         }, 5000);
+    }    // Project Management Methods
+    openProjectModal(projectId = null) {
+        const modal = document.getElementById('project-modal');
+        const form = document.getElementById('project-form');
+        const title = document.getElementById('project-modal-title');
+        
+        // Reset form
+        form.reset();
+        
+        if (projectId) {
+            // Edit mode
+            title.textContent = 'Edit Project';
+            this.loadProjectForEdit(projectId);
+        } else {
+            // Add mode
+            title.textContent = 'Add New Project';
+            document.getElementById('project-id').value = '';
+        }
+        
+        modal.classList.add('show');
     }
 
-    // Placeholder methods for project/skill management
-    openProjectModal() {
-        alert('Project modal - Coming soon!');
+    async loadProjectForEdit(projectId) {
+        try {
+            const projects = await this.apiCall('/admin/projects');
+            const project = projects.find(p => p.id == projectId);
+            
+            if (project) {
+                document.getElementById('project-id').value = project.id;
+                document.getElementById('project-title').value = project.title || '';
+                document.getElementById('project-description').value = project.description || '';
+                document.getElementById('project-category').value = project.category || '';
+                document.getElementById('project-year').value = project.year || '';
+                document.getElementById('project-status').value = project.status || 'completed';
+                document.getElementById('project-demo-url').value = project.demo_url || '';
+                document.getElementById('project-github-url').value = project.github_url || '';
+                document.getElementById('project-technologies').value = project.technologies ? project.technologies.join(', ') : '';
+                document.getElementById('project-tags').value = project.tags ? project.tags.join(', ') : '';
+                document.getElementById('project-featured').checked = project.is_featured || false;
+            }
+        } catch (error) {
+            console.error('Failed to load project for edit:', error);
+            this.showAlert('projects-alert', 'Failed to load project data', 'error');
+        }
+    }
+
+    async handleProjectSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const projectId = formData.get('id');
+        
+        const projectData = {
+            title: formData.get('title'),
+            description: formData.get('description'),
+            category: formData.get('category'),
+            year: parseInt(formData.get('year')) || null,
+            status: formData.get('status') || 'completed',
+            demo_url: formData.get('demo_url'),
+            github_url: formData.get('github_url'),
+            is_featured: formData.has('is_featured'),
+            technologies: formData.get('technologies') ? formData.get('technologies').split(',').map(t => t.trim()).filter(t => t) : [],
+            tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()).filter(t => t) : []
+        };
+
+        try {
+            if (projectId) {
+                // Update existing project
+                await this.apiCall(`/admin/projects/${projectId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(projectData)
+                });
+                this.showAlert('projects-alert', 'Project updated successfully!', 'success');
+            } else {
+                // Create new project
+                await this.apiCall('/admin/projects', {
+                    method: 'POST',
+                    body: JSON.stringify(projectData)
+                });
+                this.showAlert('projects-alert', 'Project created successfully!', 'success');
+            }
+            
+            this.closeModal('project-modal');
+            await this.loadProjectsData();
+            
+        } catch (error) {
+            console.error('Failed to save project:', error);
+            this.showAlert('projects-alert', error.message, 'error');
+        }
     }
 
     editProject(id) {
-        alert(`Edit project ${id} - Coming soon!`);
+        this.openProjectModal(id);
     }
 
-    deleteProject(id) {
-        if (confirm('Are you sure you want to delete this project?')) {
-            alert(`Delete project ${id} - Coming soon!`);
+    async deleteProject(id) {
+        if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            await this.apiCall(`/admin/projects/${id}`, {
+                method: 'DELETE'
+            });
+            
+            this.showAlert('projects-alert', 'Project deleted successfully!', 'success');
+            await this.loadProjectsData();
+            
+        } catch (error) {
+            console.error('Failed to delete project:', error);
+            this.showAlert('projects-alert', error.message, 'error');
         }
     }
 
-    openSkillModal() {
-        alert('Skill modal - Coming soon!');
+    // Skill Management Methods
+    openSkillModal(skillId = null) {
+        const modal = document.getElementById('skill-modal');
+        const form = document.getElementById('skill-form');
+        const title = document.getElementById('skill-modal-title');
+        
+        // Reset form
+        form.reset();
+        
+        if (skillId) {
+            // Edit mode
+            title.textContent = 'Edit Skill';
+            this.loadSkillForEdit(skillId);
+        } else {
+            // Add mode
+            title.textContent = 'Add New Skill';
+            document.getElementById('skill-id').value = '';
+        }
+        
+        modal.classList.add('show');
+    }
+
+    async loadSkillForEdit(skillId) {
+        try {
+            const skills = await this.apiCall('/admin/skills');
+            const skill = skills.find(s => s.id == skillId);
+            
+            if (skill) {
+                document.getElementById('skill-id').value = skill.id;
+                document.getElementById('skill-name').value = skill.name || '';
+                document.getElementById('skill-category').value = skill.category || '';
+                document.getElementById('skill-percentage').value = skill.percentage || '';
+                document.getElementById('skill-description').value = skill.description || '';
+                document.getElementById('skill-icon').value = skill.icon || '';
+            }
+        } catch (error) {
+            console.error('Failed to load skill for edit:', error);
+            this.showAlert('skills-alert', 'Failed to load skill data', 'error');
+        }
+    }
+
+    async handleSkillSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const skillId = formData.get('id');
+        
+        const skillData = {
+            name: formData.get('name'),
+            category: formData.get('category'),
+            percentage: parseInt(formData.get('percentage')),
+            description: formData.get('description'),
+            icon: formData.get('icon')
+        };
+
+        try {
+            if (skillId) {
+                // Update existing skill
+                await this.apiCall(`/admin/skills/${skillId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(skillData)
+                });
+                this.showAlert('skills-alert', 'Skill updated successfully!', 'success');
+            } else {
+                // Create new skill
+                await this.apiCall('/admin/skills', {
+                    method: 'POST',
+                    body: JSON.stringify(skillData)
+                });
+                this.showAlert('skills-alert', 'Skill created successfully!', 'success');
+            }
+            
+            this.closeModal('skill-modal');
+            await this.loadSkillsData();
+            
+        } catch (error) {
+            console.error('Failed to save skill:', error);
+            this.showAlert('skills-alert', error.message, 'error');
+        }
     }
 
     editSkill(id) {
-        alert(`Edit skill ${id} - Coming soon!`);
+        this.openSkillModal(id);
     }
 
-    deleteSkill(id) {
-        if (confirm('Are you sure you want to delete this skill?')) {
-            alert(`Delete skill ${id} - Coming soon!`);
+    async deleteSkill(id) {
+        if (!confirm('Are you sure you want to delete this skill? This action cannot be undone.')) {
+            return;
         }
+
+        try {
+            await this.apiCall(`/admin/skills/${id}`, {
+                method: 'DELETE'
+            });
+            
+            this.showAlert('skills-alert', 'Skill deleted successfully!', 'success');
+            await this.loadSkillsData();
+            
+        } catch (error) {
+            console.error('Failed to delete skill:', error);
+            this.showAlert('skills-alert', error.message, 'error');
+        }
+    }
+
+    // Modal Management
+    closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('show');
     }
 }
 

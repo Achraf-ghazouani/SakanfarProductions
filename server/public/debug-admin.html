@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; }
+        #logs { background: #000; color: #0f0; padding: 10px; height: 300px; overflow-y: auto; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel Debug</h1>
+    
+    <div class="debug">
+        <h3>Test Login</h3>
+        <button onclick="testLogin()">Login as Admin</button>
+        <div id="login-status">Not logged in</div>
+    </div>
+    
+    <div class="debug">
+        <h3>Test Modal Functions</h3>
+        <button onclick="testSkillModal()">Test Skill Modal</button>
+        <button onclick="testProjectModal()">Test Project Modal</button>
+    </div>
+    
+    <div class="debug">
+        <h3>Test API Calls</h3>
+        <button onclick="testGetSkills()">Get Skills</button>
+        <button onclick="testGetProjects()">Get Projects</button>
+    </div>
+    
+    <div id="logs"></div>
+
+    <script>
+        let token = null;
+        
+        function log(message) {
+            const logs = document.getElementById('logs');
+            logs.innerHTML += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            logs.scrollTop = logs.scrollHeight;
+            console.log(message);
+        }
+        
+        async function testLogin() {
+            log('Attempting login...');
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: 'admin123' })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    token = data.token;
+                    document.getElementById('login-status').textContent = 'Logged in successfully';
+                    log('✅ Login successful, token: ' + token.substring(0, 20) + '...');
+                } else {
+                    log('❌ Login failed: ' + data.error);
+                }
+            } catch (error) {
+                log('❌ Login error: ' + error.message);
+            }
+        }
+        
+        function testSkillModal() {
+            log('Testing skill modal...');
+            if (typeof admin !== 'undefined' && admin.openSkillModal) {
+                log('✅ admin.openSkillModal exists');
+                try {
+                    admin.openSkillModal();
+                    log('✅ admin.openSkillModal() called');
+                } catch (error) {
+                    log('❌ admin.openSkillModal() error: ' + error.message);
+                }
+            } else {
+                log('❌ admin object or openSkillModal method not found');
+                log('Available admin methods: ' + (typeof admin !== 'undefined' ? Object.getOwnPropertyNames(admin.constructor.prototype) : 'admin not defined'));
+            }
+        }
+        
+        function testProjectModal() {
+            log('Testing project modal...');
+            if (typeof admin !== 'undefined' && admin.openProjectModal) {
+                log('✅ admin.openProjectModal exists');
+                try {
+                    admin.openProjectModal();
+                    log('✅ admin.openProjectModal() called');
+                } catch (error) {
+                    log('❌ admin.openProjectModal() error: ' + error.message);
+                }
+            } else {
+                log('❌ admin object or openProjectModal method not found');
+            }
+        }
+        
+        async function testGetSkills() {
+            if (!token) {
+                log('❌ Please login first');
+                return;
+            }
+            
+            log('Testing get skills...');
+            try {
+                const response = await fetch('/api/admin/skills', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    log('✅ Got ' + data.length + ' skills');
+                    data.forEach(skill => log('  - ' + skill.name + ' (' + skill.category + ')'));
+                } else {
+                    log('❌ Get skills failed: ' + data.error);
+                }
+            } catch (error) {
+                log('❌ Get skills error: ' + error.message);
+            }
+        }
+        
+        async function testGetProjects() {
+            if (!token) {
+                log('❌ Please login first');
+                return;
+            }
+            
+            log('Testing get projects...');
+            try {
+                const response = await fetch('/api/admin/projects', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    log('✅ Got ' + data.length + ' projects');
+                    data.forEach(project => log('  - ' + project.title + ' (' + project.category + ')'));
+                } else {
+                    log('❌ Get projects failed: ' + data.error);
+                }
+            } catch (error) {
+                log('❌ Get projects error: ' + error.message);
+            }
+        }
+        
+        // Check if admin object is available
+        window.addEventListener('load', () => {
+            log('Page loaded');
+            log('admin object available: ' + (typeof admin !== 'undefined'));
+            log('Current URL: ' + window.location.href);
+        });
+    </script>
+</body>
+</html>

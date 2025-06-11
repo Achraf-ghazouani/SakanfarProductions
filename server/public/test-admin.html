@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-result { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel Test</h1>
+    <div id="results"></div>
+    
+    <button onclick="testLogin()">Test Login</button>
+    <button onclick="testCreateSkill()">Test Create Skill</button>
+    <button onclick="testCreateProject()">Test Create Project</button>
+    <button onclick="testListData()">Test List Data</button>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+        let token = null;
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.textContent = message;
+            document.getElementById('results').appendChild(div);
+        }
+        
+        async function testLogin() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: 'admin123' })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    token = data.token;
+                    addResult('✅ Login successful', 'success');
+                } else {
+                    addResult(`❌ Login failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Login error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testCreateSkill() {
+            if (!token) {
+                addResult('❌ Please login first', 'error');
+                return;
+            }
+            
+            const skillData = {
+                name: 'Test Web Skill',
+                category: 'Programming Languages',
+                percentage: 88,
+                description: 'A test skill created from the browser'
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/skills`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(skillData)
+                });
+                
+                const result = await response.json();
+                if (response.ok) {
+                    addResult(`✅ Skill created successfully (ID: ${result.id})`, 'success');
+                } else {
+                    addResult(`❌ Skill creation failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Skill creation error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testCreateProject() {
+            if (!token) {
+                addResult('❌ Please login first', 'error');
+                return;
+            }
+            
+            const projectData = {
+                title: 'Test Web Project',
+                description: 'A test project created from the browser',
+                category: 'web',
+                year: 2024,
+                technologies: ['JavaScript', 'HTML', 'CSS'],
+                tags: ['frontend', 'responsive'],
+                is_featured: true
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/projects`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(projectData)
+                });
+                
+                const result = await response.json();
+                if (response.ok) {
+                    addResult(`✅ Project created successfully (ID: ${result.id})`, 'success');
+                } else {
+                    addResult(`❌ Project creation failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Project creation error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testListData() {
+            if (!token) {
+                addResult('❌ Please login first', 'error');
+                return;
+            }
+            
+            try {
+                // Test skills
+                const skillsResponse = await fetch(`${API_BASE}/admin/skills`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const skills = await skillsResponse.json();
+                addResult(`✅ Found ${skills.length} skills`, 'success');
+                
+                // Test projects
+                const projectsResponse = await fetch(`${API_BASE}/admin/projects`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const projects = await projectsResponse.json();
+                addResult(`✅ Found ${projects.length} projects`, 'success');
+                
+            } catch (error) {
+                addResult(`❌ List data error: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

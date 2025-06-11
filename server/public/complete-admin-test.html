@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel Complete Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        #console { background: #f5f5f5; padding: 10px; height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; max-width: 500px; width: 90%; }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel Complete Test</h1>
+    
+    <div class="test-section">
+        <h3>Step 1: Login Test</h3>
+        <button onclick="performLogin()">Login as Admin</button>
+        <div id="login-status">Not logged in</div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 2: Admin Object Test</h3>
+        <button onclick="testAdminObject()">Check Admin Object</button>
+        <button onclick="testOpenSkillModal()">Test Open Skill Modal</button>
+        <button onclick="testOpenProjectModal()">Test Open Project Modal</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 3: Modal Elements Test</h3>
+        <button onclick="checkModalElements()">Check Modal Elements</button>
+        <button onclick="testDirectModalShow()">Test Direct Modal Show</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 4: Full Workflow Test</h3>
+        <button onclick="fullWorkflowTest()">Complete Login + Modal Test</button>
+    </div>
+    
+    <div id="console"></div>
+    
+    <!-- Test modal -->
+    <div id="test-modal" class="modal">
+        <div class="modal-content">
+            <h3>Test Modal Works!</h3>
+            <p>This proves modal functionality is working.</p>
+            <button onclick="closeTestModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        let adminToken = null;
+        
+        function log(message, type = 'info') {
+            const console = document.getElementById('console');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : (type === 'success' ? 'success' : 'info');
+            console.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span><br>`;
+            console.scrollTop = console.scrollHeight;
+        }
+        
+        async function performLogin() {
+            log('Attempting login with admin/admin123...');
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: 'admin123' })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    adminToken = data.token;
+                    localStorage.setItem('admin_token', adminToken);
+                    document.getElementById('login-status').innerHTML = '<span class="success">✅ Logged in successfully</span>';
+                    log('✅ Login successful! Token received.', 'success');
+                    log('Token: ' + adminToken.substring(0, 30) + '...');
+                    
+                    // Wait a moment then test admin object
+                    setTimeout(testAdminObject, 500);
+                } else {
+                    log('❌ Login failed: ' + data.error, 'error');
+                    document.getElementById('login-status').innerHTML = '<span class="error">❌ Login failed</span>';
+                }
+            } catch (error) {
+                log('❌ Login error: ' + error.message, 'error');
+            }
+        }
+        
+        function testAdminObject() {
+            log('Testing admin object availability...');
+            
+            if (typeof admin !== 'undefined') {
+                log('✅ admin object exists', 'success');
+                log('admin type: ' + typeof admin);
+                
+                // Check if it's an instance of AdminDashboard
+                if (admin.constructor && admin.constructor.name) {
+                    log('admin constructor: ' + admin.constructor.name);
+                }
+                
+                // List available methods
+                try {
+                    const proto = Object.getPrototypeOf(admin);
+                    const methods = Object.getOwnPropertyNames(proto).filter(name => 
+                        typeof admin[name] === 'function' && name !== 'constructor'
+                    );
+                    log('Available methods: ' + methods.join(', '));
+                    
+                    // Test specific methods
+                    if (typeof admin.openSkillModal === 'function') {
+                        log('✅ openSkillModal method found', 'success');
+                    } else {
+                        log('❌ openSkillModal method NOT found', 'error');
+                    }
+                    
+                    if (typeof admin.openProjectModal === 'function') {
+                        log('✅ openProjectModal method found', 'success');
+                    } else {
+                        log('❌ openProjectModal method NOT found', 'error');
+                    }
+                    
+                } catch (error) {
+                    log('Error examining admin object: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ admin object NOT defined', 'error');
+                log('Available global objects: ' + Object.keys(window).filter(key => 
+                    typeof window[key] === 'object' && window[key] !== null
+                ).join(', '));
+            }
+        }
+        
+        function testOpenSkillModal() {
+            log('Testing openSkillModal...');
+            if (typeof admin !== 'undefined' && typeof admin.openSkillModal === 'function') {
+                try {
+                    admin.openSkillModal();
+                    log('✅ admin.openSkillModal() called successfully', 'success');
+                    
+                    // Check if modal is visible
+                    setTimeout(() => {
+                        const modal = document.getElementById('skill-modal');
+                        if (modal && modal.classList.contains('show')) {
+                            log('✅ Skill modal is now visible!', 'success');
+                        } else {
+                            log('❌ Skill modal is not visible', 'error');
+                        }
+                    }, 100);
+                } catch (error) {
+                    log('❌ Error calling openSkillModal: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ admin.openSkillModal not available', 'error');
+            }
+        }
+        
+        function testOpenProjectModal() {
+            log('Testing openProjectModal...');
+            if (typeof admin !== 'undefined' && typeof admin.openProjectModal === 'function') {
+                try {
+                    admin.openProjectModal();
+                    log('✅ admin.openProjectModal() called successfully', 'success');
+                    
+                    // Check if modal is visible
+                    setTimeout(() => {
+                        const modal = document.getElementById('project-modal');
+                        if (modal && modal.classList.contains('show')) {
+                            log('✅ Project modal is now visible!', 'success');
+                        } else {
+                            log('❌ Project modal is not visible', 'error');
+                        }
+                    }, 100);
+                } catch (error) {
+                    log('❌ Error calling openProjectModal: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ admin.openProjectModal not available', 'error');
+            }
+        }
+        
+        function checkModalElements() {
+            log('Checking for modal elements in DOM...');
+            
+            const skillModal = document.getElementById('skill-modal');
+            const projectModal = document.getElementById('project-modal');
+            
+            if (skillModal) {
+                log('✅ skill-modal element found', 'success');
+                log('skill-modal classes: ' + skillModal.className);
+            } else {
+                log('❌ skill-modal element NOT found', 'error');
+            }
+            
+            if (projectModal) {
+                log('✅ project-modal element found', 'success');
+                log('project-modal classes: ' + projectModal.className);
+            } else {
+                log('❌ project-modal element NOT found', 'error');
+            }
+        }
+        
+        function testDirectModalShow() {
+            log('Testing direct modal show...');
+            const testModal = document.getElementById('test-modal');
+            if (testModal) {
+                testModal.classList.add('show');
+                log('✅ Test modal opened directly', 'success');
+            } else {
+                log('❌ Test modal not found', 'error');
+            }
+        }
+        
+        function closeTestModal() {
+            document.getElementById('test-modal').classList.remove('show');
+            log('Test modal closed');
+        }
+        
+        async function fullWorkflowTest() {
+            log('=== STARTING FULL WORKFLOW TEST ===');
+            
+            // Step 1: Login
+            await performLogin();
+            
+            // Step 2: Wait for admin object
+            setTimeout(() => {
+                testAdminObject();
+                
+                // Step 3: Test modals
+                setTimeout(() => {
+                    checkModalElements();
+                    testOpenSkillModal();
+                    
+                    setTimeout(() => {
+                        testOpenProjectModal();
+                    }, 1000);
+                }, 1000);
+            }, 1000);
+        }
+        
+        // Load admin.js script
+        window.addEventListener('load', () => {
+            log('Page loaded, loading admin.js...');
+            
+            // First, check if we're on the admin page or need to load the script
+            const script = document.createElement('script');
+            script.src = '/admin/admin.js';
+            script.onload = () => {
+                log('✅ admin.js script loaded successfully', 'success');
+                setTimeout(testAdminObject, 500);
+            };
+            script.onerror = () => {
+                log('❌ Failed to load admin.js script', 'error');
+            };
+            document.head.appendChild(script);
+        });
+    </script>
+</body>
+</html>
